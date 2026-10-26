@@ -3,6 +3,7 @@ package com.auca.to_do_list.service;
 import com.auca.to_do_list.model.Task;
 import com.auca.to_do_list.model.TaskStatus;
 import com.auca.to_do_list.repository.TaskRepository;
+import com.auca.to_do_list.repository.WorkLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ public class TaskService {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private WorkLogRepository workLogRepository;
 
     // D1: safe saving
     public String saveTask(Task task) {
@@ -60,10 +64,14 @@ public class TaskService {
         return "Task updated successfully";
     }
 
+    // E3: a task that has work logs cannot be deleted
     public String deleteTask(UUID id) {
         Optional<Task> found = taskRepository.findById(id);
         if (found.isEmpty()) {
             return "The task with that id does not exist";
+        }
+        if (workLogRepository.existsByTask(found.get())) {
+            return "That task has work logs, delete them first";
         }
         taskRepository.deleteById(id);
         return "Task deleted successfully";

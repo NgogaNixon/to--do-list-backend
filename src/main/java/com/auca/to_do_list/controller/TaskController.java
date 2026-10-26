@@ -65,11 +65,15 @@ public class TaskController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    // E3: a task that has work logs cannot be deleted
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable UUID id) {
         String message = taskService.deleteTask(id);
         if (message.equals("The task with that id does not exist")) {
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+        }
+        if (message.equals("That task has work logs, delete them first")) {
+            return new ResponseEntity<>(message, HttpStatus.CONFLICT);
         }
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
