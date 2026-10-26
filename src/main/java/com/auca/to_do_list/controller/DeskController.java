@@ -62,4 +62,10 @@ public class DeskController {
         }
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    // C2: desks that nobody uses
+    @GetMapping("/free")
+    public ResponseEntity<List<Desk>> getFreeDesks() {
+        return new ResponseEntity<>(deskService.getFreeDesks(), HttpStatus.OK);
+    }
 }

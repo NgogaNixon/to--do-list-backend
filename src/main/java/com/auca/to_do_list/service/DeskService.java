@@ -48,4 +48,9 @@ public class DeskService {
         deskRepository.deleteById(id);
         return "Desk deleted successfully";
     }
+
+    // C2: desks that nobody uses
+    public List<Desk> getFreeDesks() {
+        return deskRepository.findFreeDesks();
+    }
 }

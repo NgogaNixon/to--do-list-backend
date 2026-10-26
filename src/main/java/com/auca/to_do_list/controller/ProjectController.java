@@ -1,6 +1,8 @@
 package com.auca.to_do_list.controller;
 
+import com.auca.to_do_list.model.Member;
 import com.auca.to_do_list.model.Project;
+import com.auca.to_do_list.service.MemberService;
 import com.auca.to_do_list.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,9 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private MemberService memberService;
 
     @PostMapping("/save")
     public ResponseEntity<String> saveProject(@RequestBody Project project) {
@@ -68,5 +73,15 @@ public class ProjectController {
     @GetMapping("/by-owner-name")
     public ResponseEntity<List<Project>> getProjectsByOwnerName(@RequestParam String ownerName) {
         return new ResponseEntity<>(projectService.getProjectsByOwnerName(ownerName), HttpStatus.OK);
+    }
+
+    // C4: projects where one member has tasks
+    @GetMapping("/of-member/{memberId}")
+    public ResponseEntity<?> getProjectsOfMember(@PathVariable UUID memberId) {
+        Optional<Member> member = memberService.getMemberById(memberId);
+        if (member.isEmpty()) {
+            return new ResponseEntity<>("The member with that id does not exist", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(projectService.getProjectsOfMember(memberId), HttpStatus.OK);
     }
 }

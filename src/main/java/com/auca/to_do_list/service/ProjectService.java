@@ -55,4 +55,9 @@ public class ProjectService {
     public List<Project> getProjectsByOwnerName(String ownerName) {
         return projectRepository.findByOwnerNameIgnoreCaseOrderByProjectNameAsc(ownerName);
     }
+
+    // C4: projects where this member has tasks
+    public List<Project> getProjectsOfMember(UUID memberId) {
+        return projectRepository.findProjectsOfMember(memberId);
+    }
 }

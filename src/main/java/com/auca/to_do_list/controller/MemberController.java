@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -61,5 +62,11 @@ public class MemberController {
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    // C1: members by skill name
+    @GetMapping("/by-skill")
+    public ResponseEntity<List<Member>> getMembersBySkillName(@RequestParam String name) {
+        return new ResponseEntity<>(memberService.getMembersBySkillName(name), HttpStatus.OK);
     }
 }

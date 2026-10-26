@@ -62,4 +62,10 @@ public class SkillController {
         }
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    // C3: skills that nobody holds
+    @GetMapping("/unused")
+    public ResponseEntity<List<Skill>> getUnusedSkills() {
+        return new ResponseEntity<>(skillService.getUnusedSkills(), HttpStatus.OK);
+    }
 }

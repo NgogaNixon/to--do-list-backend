@@ -51,4 +51,9 @@ public class MemberService {
         memberRepository.deleteById(id);
         return "Member deleted successfully";
     }
+
+    // C1: members by skill name
+    public List<Member> getMembersBySkillName(String name) {
+        return memberRepository.findMembersBySkillName(name);
+    }
 }
