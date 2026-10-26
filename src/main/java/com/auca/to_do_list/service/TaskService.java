@@ -17,7 +17,21 @@ public class TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
+    // D1: safe saving
     public String saveTask(Task task) {
+        if (task.getDueDate() != null && task.getDueDate().isBefore(LocalDate.now())) {
+            return "Task date cannot be in the past";
+        }
+
+        if (task.getMember() != null && task.getDueDate() != null) {
+            boolean busy = taskRepository.existsByMemberAndDueDateAndStatusNot(
+                    task.getMember(), task.getDueDate(), TaskStatus.DROPPED);
+            if (busy) {
+                return "Member already has a task due on that date";
+            }
+        }
+
+        task.setStatus(TaskStatus.TODO);
         taskRepository.save(task);
         return "Task saved successfully";
     }
@@ -30,6 +44,7 @@ public class TaskService {
         return taskRepository.findById(id);
     }
 
+    // D2: the status is no longer changed here, only in changeStatus
     public String updateTask(UUID id, Task newTask) {
         Optional<Task> found = taskRepository.findById(id);
         if (found.isEmpty()) {
@@ -38,7 +53,6 @@ public class TaskService {
         Task task = found.get();
         task.setTitle(newTask.getTitle());
         task.setDueDate(newTask.getDueDate());
-        task.setStatus(newTask.getStatus());
         task.setPriority(newTask.getPriority());
         task.setProject(newTask.getProject());
         task.setMember(newTask.getMember());
@@ -63,5 +77,34 @@ public class TaskService {
     // B3: tasks between two dates
     public List<Task> getTasksBetween(LocalDate start, LocalDate end) {
         return taskRepository.findByDueDateBetweenOrderByDueDateAsc(start, end);
+    }
+
+    // D2: status flow
+    public String changeStatus(UUID id, TaskStatus newStatus) {
+        Optional<Task> found = taskRepository.findById(id);
+        if (found.isEmpty()) {
+            return "The task with that id does not exist";
+        }
+        Task task = found.get();
+        TaskStatus current = task.getStatus();
+
+        boolean allowed = false;
+        if (current == TaskStatus.TODO) {
+            if (newStatus == TaskStatus.IN_PROGRESS || newStatus == TaskStatus.DROPPED) {
+                allowed = true;
+            }
+        } else if (current == TaskStatus.IN_PROGRESS) {
+            if (newStatus == TaskStatus.DONE || newStatus == TaskStatus.DROPPED) {
+                allowed = true;
+            }
+        }
+
+        if (!allowed) {
+            return "Cannot change status from " + current + " to " + newStatus;
+        }
+
+        task.setStatus(newStatus);
+        taskRepository.save(task);
+        return "Task status updated successfully";
     }
 }

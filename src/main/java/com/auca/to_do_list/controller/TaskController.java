@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,9 +29,16 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
+    // D1: safe saving
     @PostMapping("/save")
     public ResponseEntity<String> saveTask(@RequestBody Task task) {
         String message = taskService.saveTask(task);
+        if (message.equals("Task date cannot be in the past")) {
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        }
+        if (message.equals("Member already has a task due on that date")) {
+            return new ResponseEntity<>(message, HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
@@ -78,5 +86,18 @@ public class TaskController {
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
         return new ResponseEntity<>(taskService.getTasksBetween(startDate, endDate), HttpStatus.OK);
+    }
+
+    // D2: status flow
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> changeStatus(@PathVariable UUID id, @RequestParam TaskStatus status) {
+        String message = taskService.changeStatus(id, status);
+        if (message.equals("The task with that id does not exist")) {
+            return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+        }
+        if (message.startsWith("Cannot change status")) {
+            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }
