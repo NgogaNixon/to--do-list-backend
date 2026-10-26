@@ -1,10 +1,12 @@
 package com.auca.to_do_list.service;
 
 import com.auca.to_do_list.model.Task;
+import com.auca.to_do_list.model.TaskStatus;
 import com.auca.to_do_list.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,5 +53,15 @@ public class TaskService {
         }
         taskRepository.deleteById(id);
         return "Task deleted successfully";
+    }
+
+    // B2: tasks by status
+    public List<Task> getTasksByStatus(TaskStatus status) {
+        return taskRepository.findByStatusOrderByDueDateAsc(status);
+    }
+
+    // B3: tasks between two dates
+    public List<Task> getTasksBetween(LocalDate start, LocalDate end) {
+        return taskRepository.findByDueDateBetweenOrderByDueDateAsc(start, end);
     }
 }

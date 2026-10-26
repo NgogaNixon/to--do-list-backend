@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -61,5 +62,11 @@ public class ProjectController {
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    // B1: projects by owner name
+    @GetMapping("/by-owner-name")
+    public ResponseEntity<List<Project>> getProjectsByOwnerName(@RequestParam String ownerName) {
+        return new ResponseEntity<>(projectService.getProjectsByOwnerName(ownerName), HttpStatus.OK);
     }
 }

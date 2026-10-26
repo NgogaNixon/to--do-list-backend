@@ -50,4 +50,9 @@ public class ProjectService {
         projectRepository.deleteById(id);
         return "Project deleted successfully";
     }
+
+    // B1: projects of one owner
+    public List<Project> getProjectsByOwnerName(String ownerName) {
+        return projectRepository.findByOwnerNameIgnoreCaseOrderByProjectNameAsc(ownerName);
+    }
 }

@@ -1,6 +1,7 @@
 package com.auca.to_do_list.controller;
 
 import com.auca.to_do_list.model.Task;
+import com.auca.to_do_list.model.TaskStatus;
 import com.auca.to_do_list.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,5 +64,19 @@ public class TaskController {
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    // B2: tasks by status
+    @GetMapping("/by-status")
+    public ResponseEntity<List<Task>> getTasksByStatus(@RequestParam TaskStatus status) {
+        return new ResponseEntity<>(taskService.getTasksByStatus(status), HttpStatus.OK);
+    }
+
+    // B3: tasks between two dates
+    @GetMapping("/between")
+    public ResponseEntity<List<Task>> getTasksBetween(@RequestParam String start, @RequestParam String end) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        return new ResponseEntity<>(taskService.getTasksBetween(startDate, endDate), HttpStatus.OK);
     }
 }
