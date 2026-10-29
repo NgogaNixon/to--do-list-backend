@@ -104,4 +104,18 @@ public class TaskController {
         }
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    // F1: number of tasks for each status
+    @GetMapping("/stats/by-status")
+    public ResponseEntity<List<Object[]>> getTaskCountsByStatus() {
+        return new ResponseEntity<>(taskService.getTaskCountsByStatus(), HttpStatus.OK);
+    }
+
+    // F2: cancel the tasks of a member on one day
+    @PatchMapping("/cancel-day")
+    public ResponseEntity<String> cancelDay(@RequestParam UUID memberId, @RequestParam String date) {
+        LocalDate day = LocalDate.parse(date);
+        String message = taskService.cancelDay(memberId, day);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }

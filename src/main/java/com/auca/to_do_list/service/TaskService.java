@@ -115,4 +115,15 @@ public class TaskService {
         taskRepository.save(task);
         return "Task status updated successfully";
     }
+
+    // F1: number of tasks for each status
+    public List<Object[]> getTaskCountsByStatus() {
+        return taskRepository.countTasksByStatus();
+    }
+
+    // F2: the member is absent, drop all their tasks of that day except the DONE ones
+    public String cancelDay(UUID memberId, LocalDate date) {
+        int count = taskRepository.cancelTasksOfDay(memberId, date, TaskStatus.DROPPED, TaskStatus.DONE);
+        return count + " tasks cancelled";
+    }
 }
