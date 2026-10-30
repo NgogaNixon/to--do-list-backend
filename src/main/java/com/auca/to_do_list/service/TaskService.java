@@ -5,6 +5,8 @@ import com.auca.to_do_list.model.TaskStatus;
 import com.auca.to_do_list.repository.TaskRepository;
 import com.auca.to_do_list.repository.WorkLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -125,5 +127,10 @@ public class TaskService {
     public String cancelDay(UUID memberId, LocalDate date) {
         int count = taskRepository.cancelTasksOfDay(memberId, date, TaskStatus.DROPPED, TaskStatus.DONE);
         return count + " tasks cancelled";
+    }
+
+    // Bonus: tasks page by page
+    public Page<Task> getTasksPage(Pageable pageable) {
+        return taskRepository.findAll(pageable);
     }
 }

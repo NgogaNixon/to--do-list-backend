@@ -4,6 +4,10 @@ import com.auca.to_do_list.model.Task;
 import com.auca.to_do_list.model.TaskStatus;
 import com.auca.to_do_list.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -117,5 +121,20 @@ public class TaskController {
         LocalDate day = LocalDate.parse(date);
         String message = taskService.cancelDay(memberId, day);
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    // Bonus: tasks page by page, for example /api/tasks/page?page=0&size=5&sort=dueDate,desc
+    @GetMapping("/page")
+    public ResponseEntity<Page<Task>> getTasksPage(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "5") int size,
+                                                   @RequestParam(defaultValue = "dueDate,asc") String sort) {
+        String[] parts = sort.split(",");
+        String field = parts[0];
+        Sort.Direction direction = Sort.Direction.ASC;
+        if (parts.length > 1 && parts[1].equalsIgnoreCase("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, field));
+        return new ResponseEntity<>(taskService.getTasksPage(pageable), HttpStatus.OK);
     }
 }

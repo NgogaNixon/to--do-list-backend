@@ -38,4 +38,10 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
                          @Param("date") LocalDate date,
                          @Param("newStatus") TaskStatus newStatus,
                          @Param("skipStatus") TaskStatus skipStatus);
+
+    // Bonus dashboard: number of tasks due on one date
+    long countByDueDate(LocalDate dueDate);
+
+    // Bonus dashboard: number of tasks with one status
+    long countByStatus(TaskStatus status);
 }
